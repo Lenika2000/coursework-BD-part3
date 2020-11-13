@@ -18,6 +18,7 @@ public class User {
     static String[] lastNames= {"Маньшина","Корнишова","Гумирова","Андреева","Подсекина","Белова",
     "Петрова", "Иванова"};   // фамилия
     static int[] maxStressLevel = {100,200,300,400,500,600,700};
+    static int usersQuantity = firstNames.length * lastNames.length;
 
     public static void createUsers() throws IOException {
         FileWriter nFile = new FileWriter("users.sql");
