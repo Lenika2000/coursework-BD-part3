@@ -12,6 +12,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 
+//+++++++++++++++++++++++++++++++++++++++++
 public class User {
     static String[] firstNames = {"Екатерина","Евгения","Елена","Алена","Виктория","Анна","Анастасия",
     "Зарина"}; // имя

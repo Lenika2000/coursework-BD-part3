@@ -7,6 +7,9 @@ class Main {
             User.createUsers();
             Location.createLocations();
             Activity.createActivities();
+            ShoppingList.createShoppingLists();
+            Product.createProducts();
+            Finance.createFinance();
         } catch (IOException e) {
             e.printStackTrace();
         }
