@@ -5,6 +5,7 @@
 //        стоимость            REAL CHECK (стоимость > 0) NOT NULL,
 //        количество           INTEGER CHECK (количество > 0) NOT NULL,
 //        срочность_покупки    DATE NOT NULL,
+//        подтверждение        isConfirmed_enum,
 //        id_списка_покупок    INTEGER NOT NULL REFERENCES список_покупок ON DELETE CASCADE
 //        );
 
@@ -19,7 +20,7 @@ public class Product {
     static int[] quantity={1,2};
     static String[] urgency={"2020-11-22","2020-11-26","2020-11-27","2020-12-01","2020-12-02","2020-12-03","2020-12-08"
             ,"2020-12-09","2020-12-12","2020-12-14","2020-12-23","2020-12-26"};
-    static int[] shoppingListID= new int[ShoppingList.shoppingListsQuantity];
+    static int[] shoppingListID= new int[ActivityTablesCreation.shoppingListsQuantity];
     public static void createProducts() throws IOException {
         products.put("Молоко", "44.99");
         products.put("Биокефир", "27");
@@ -91,17 +92,15 @@ public class Product {
         products.put("Гель для душа", "112");
         products.put("Зубная паста", "145");
         products.put("Мыло", "50");
-        for (int i = 0; i < (ShoppingList.shoppingListsQuantity - 1); i++) {
-            shoppingListID[i] = i + 1;
-        }
         FileWriter nFile = new FileWriter("products.sql");
         for (Map.Entry<String, String> products : products.entrySet()) {
             for (int i = 0; i < 20; i++) {
                 nFile.write(String.format("INSERT INTO \"товар\" (\"наименование\",\"стоимость\",\"количество\"" +
-                                ",\"срочность_покупки\",\"id_списка_покупок\") " +
-                                "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n",
+                                ",\"срочность_покупки\",\"подтверждение\",\"id_списка_покупок\") " +
+                                "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n",
                         products.getKey(), products.getValue(), quantity[(int) (Math.random() * quantity.length)],
-                        urgency[(int) (Math.random() * urgency.length)], shoppingListID[(int) (Math.random() * shoppingListID.length)]));
+                        urgency[(int) (Math.random() * urgency.length)], "не подтвержден",
+                        1+ Math.random() * shoppingListID.length));
 
             }
         }
