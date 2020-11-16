@@ -46,6 +46,7 @@ public class ActivityTablesCreation {
 
 
     public static void createTables() throws IOException {
+        activitiesFile = new FileWriter("activities.sql");
         for (int i = 0; i < User.usersQuantity; i++) {
             usersId[i] = i + 1;
         }
@@ -101,6 +102,27 @@ public class ActivityTablesCreation {
         locationsFile.close();
     }
 
+    public static void writeInActivitiesFile(String startTime, String endTime, String periodicity,
+                                             String interval, String format, int impactOnStressLevel, int location,
+                                             int usersId) throws IOException {
+        periodicity = (periodicity=="") ? "" : ","+periodicity;
+        String periodicityTableColumn = (periodicity=="") ? "" : ", периодичность";
+        activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
+                        "\"допустимое_время_конца\", \"продолжительность\" %s," +
+                        "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
+                        " VALUES (\'%s\', \'%s\' %s, %s,\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+                periodicityTableColumn,
+                "2000-11-28 " + startTime,
+                "2000-11-28 " + endTime,
+                periodicity,
+                interval,
+                format ,
+                impactOnStressLevel,
+                "не выполнено",
+                location,
+                usersId));
+    }
+
     // 70 списков покупок
     public static void createShoppingLists() throws IOException {
         FileWriter shoppingListFile = new FileWriter("shoppingList.sql");
@@ -117,7 +139,6 @@ public class ActivityTablesCreation {
 
     // первые 50 строк активностей - пары
     public static void createLessons() throws IOException {
-        activitiesFile = new FileWriter("activities.sql");
         FileWriter lessonsFile = new FileWriter("lessons.sql");
         int activityID = 1;
         String[] rooms = {"422", "466", "375", "324", "1310"};
@@ -125,31 +146,22 @@ public class ActivityTablesCreation {
                 "Осипов С.В", "Болдырева Е.А", "Николаев В.В", "Харитонова А.Е", "Бессмертный И.А",
                 "Малышева Т.А", "Балакшин П.В", "Поляков В.И", "Тертычный В.Ю", "Письмак А.Е"};
         String[] type = {"лекция", "практика"};
-        for (int i = activityID; i < workEnd; i++) {
+        for (int i = activityID; i < lessonsEnd; i++) {
             int indexStartTime = (int) (Math.random() * (time.length - 4));
             String startTime = time[indexStartTime];
             String endTime = time[indexStartTime+3];
             String printFormat = format[(int) (Math.random() * format.length)];
             int locationPrint = (printFormat == "дистанционный") ? distant :  (itmoStart + (int) (Math.random() * itmoEnd));
             String printRoom = (printFormat == "дистанционный") ? "" :  rooms[(int) (Math.random() * rooms.length)];
-//            lessons[i] = new Lesson(i,startTime,endTime,periodicity[(int) (Math.random() * periodicity.length)],
-//                    "INTERVAL \'1:30\' HOUR TO MINUTE", printFormat , impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-//                    "не выполнено", locationPrint, usersId[(int) (Math.random() * usersId.length)], printRoom,
-//                    teachers[(int) (Math.random() * teachers.length)],type[(int) (Math.random() * type.length)]);
-
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                    "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                    "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                    " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+            writeInActivitiesFile(
                     startTime,
                     endTime,
                     periodicity[(int) (Math.random() * periodicity.length)],
                     "INTERVAL \'1:30\' HOUR TO MINUTE",
                     printFormat ,
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
                     locationPrint,
-                    usersId[(int) (Math.random() * usersId.length)]));
+                    usersId[(int) (Math.random() * usersId.length)]);
 
             lessonsFile.write(String.format( "INSERT INTO \"учебное_занятие\" (\"аудитория\",\"преподаватель\", \"тип\", \"id_активности\") " +
                     "VALUES (\'%s\', \'%s\', \'%s\', \'%s\');\n" ,
@@ -166,19 +178,15 @@ public class ActivityTablesCreation {
         FileWriter workFile = new FileWriter("work.sql");
         int activityID = lessonsEnd;
         for (int i = activityID; i < workEnd; i++) {
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+            writeInActivitiesFile(
                     "10:00",
                     "20:00",
                     "INTERVAL \'2\' DAY",
                     "INTERVAL \'5\' HOUR",
                     "дистанционный" ,
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
                     distant,
-                    usersId[i-lessonsEnd]));
+                    usersId[i-lessonsEnd]);
 
             workFile.write(String.format( "INSERT INTO \"рабочая_смена\" (\"id_активности\")" +
                             " VALUES (\'%s\');\n" , i ));
@@ -191,24 +199,20 @@ public class ActivityTablesCreation {
         FileWriter sportFile = new FileWriter("sport.sql");
         String[] type = {"пилатес","функциональная тренировка","бассейн","тренажерный зал","йога","стрейчинг"};
         int activityID = workEnd;
-        String printType = type[(int) (Math.random() * type.length)];
-        String printFormat = (printType == "бассейн" || printType == "тренажерный зал") ?
-                "очный" : format[(int) (Math.random() * format.length)];
-        int printLocation = (printFormat == "очный") ? sport : distant;
-        for (int i = activityID; i < shopsEnd; i++) {
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+        for (int i = activityID; i < sportEnd; i++) {
+            String printType = type[(int) (Math.random() * type.length)];
+            String printFormat = (printType == "бассейн" || printType == "тренажерный зал") ?
+                    "очный" : format[(int) (Math.random() * format.length)];
+            int printLocation = (printFormat == "очный") ? sport : distant;
+            writeInActivitiesFile(
                     "08:00",
                     "22:00",
                     "INTERVAL \'3\' DAY",
                     "INTERVAL \'1\' HOUR",
                     printFormat,
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
                     printLocation,
-                    usersId[(int) (Math.random() * usersId.length)]));
+                    usersId[(int) (Math.random() * usersId.length)]);
 
             sportFile.write(String.format( "INSERT INTO \"спортивное_занятие\" (\"вид_занятия\",\"id_активности\") " +
                     " VALUES (\'%s\', \'%s\');\n" , printType, i));
@@ -224,19 +228,15 @@ public class ActivityTablesCreation {
 
         for (int i = activityID; i < otherEnd; i++) {
             String startTime = time[(int) (Math.random() * (time.length - 4))];
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+            writeInActivitiesFile(
                     startTime,
                     startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
                     periodicity[(int) (Math.random() * periodicity.length)],
                     duration[(int) (Math.random() * duration.length)],
                     "дистанционный",
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
                     distant,
-                    usersId[(int) (Math.random() * usersId.length)]));
+                    usersId[(int) (Math.random() * usersId.length)]);
 
             othersFile.write(String.format( "INSERT INTO \"другое\" (\"описание_активности\",\"id_активности\") " +
                     " VALUES (\'%s\', \'%s\');\n" ,
@@ -271,19 +271,15 @@ public class ActivityTablesCreation {
         for (int i = activityID; i < shoppingEnd; i++) {
             String startTime = time[(int) (Math.random() * (time.length - 4))];
             int shoppingListID = (int) (Math.random() * shoppingLists.length);
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+            writeInActivitiesFile(
                     startTime,
                     startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
                     periodicity[(int) (Math.random() * periodicity.length)],
                     "INTERVAL \'1\' HOUR",
                     "очный",
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
                     choseShoppingLocation(shoppingLists[shoppingListID]),
-                    usersId[(int) (Math.random() * usersId.length)]));
+                    usersId[(int) (Math.random() * usersId.length)]);
 
             shoppingFile.write(String.format( "INSERT INTO \"поход_в_магазин\" (\"id_списка_покупок\",\"id_активности\") " +
                             " VALUES (\'%s\', \'%s\');\n" ,
@@ -301,19 +297,15 @@ public class ActivityTablesCreation {
         for (int i = activityID; i < meetingEnd; i++) {
             String startTime = time[(int) (Math.random() * (time.length - 4))];
             int firstUser = usersId[(int) (Math.random() * usersId.length)];
-            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+            writeInActivitiesFile(
                     startTime,
                     startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
                     periodicity[(int) (Math.random() * periodicity.length)],
                     duration[(int) (Math.random() * duration.length)],
                     "очный",
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-                    "не выполнено",
-                    1+Math.random() * locations.length,
-                    firstUser));
+                    1+ (int)Math.random() * locations.length,
+                    firstUser);
 
             // встречи
             meetingFile.write(String.format( "INSERT INTO \"встреча\" (\"id_активности\") " +
@@ -334,41 +326,4 @@ public class ActivityTablesCreation {
         meetingFile.close();
         meetingsUsers.close();
     }
-
-
-//    public static void createActivities() throws IOException {
-//        for (int i = 0; i < time.length - 4; i++) {
-//            startAndEndTime.put(time[i], Arrays.copyOfRange(time, i + 4, time.length));
-//        }
-//
-//        for (int i = 0; i < Location.locationQuantity; i++) {
-//            locationsId[i] = i + 1;
-//        }
-//
-//        FileWriter nFile = new FileWriter("activities.sql");
-//        for (int i = 0; i < User.usersQuantity; i++) {
-//            for (int j = 0; j < 10; j++) {
-//                String startTime = time[(int) (Math.random() * (time.length - 4))];
-//                nFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
-//                                "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
-//                                "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-//                                " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
-//                        startTime, startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
-//                        periodicity[(int) (Math.random() * periodicity.length)], duration[(int) (Math.random() * duration.length)],
-//                        format[(int) (Math.random() * format.length)], impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
-//                        "не выполнено", locationsId[(int) (Math.random() * locationsId.length)], i + 1));
-//            }
-//
-//        }
-//        nFile.close();
-//
-//
-//
-//        // поход в магазин
-//        static int[] shoppingListID;
-////    static int[] activityID;
-//
-//
-//        //встреча
-//    }
 }

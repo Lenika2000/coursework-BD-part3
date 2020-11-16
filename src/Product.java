@@ -20,7 +20,6 @@ public class Product {
     static int[] quantity={1,2};
     static String[] urgency={"2020-11-22","2020-11-26","2020-11-27","2020-12-01","2020-12-02","2020-12-03","2020-12-08"
             ,"2020-12-09","2020-12-12","2020-12-14","2020-12-23","2020-12-26"};
-    static int[] shoppingListID= new int[ActivityTablesCreation.shoppingListsQuantity];
     public static void createProducts() throws IOException {
         products.put("Молоко", "44.99");
         products.put("Биокефир", "27");
@@ -100,7 +99,7 @@ public class Product {
                                 "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n",
                         products.getKey(), products.getValue(), quantity[(int) (Math.random() * quantity.length)],
                         urgency[(int) (Math.random() * urgency.length)], "не подтвержден",
-                        1+ Math.random() * shoppingListID.length));
+                        (1+ (int)(Math.random() * ActivityTablesCreation.shoppingListsQuantity))));
 
             }
         }
