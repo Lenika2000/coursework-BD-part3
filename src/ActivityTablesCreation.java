@@ -20,9 +20,10 @@ public class ActivityTablesCreation {
     // интервалы различных типов активностей
     static int lessonsEnd = 51;
     static int workEnd = lessonsEnd+User.usersQuantity;
-    static int sportEnd = lessonsEnd+50;
+    static int sportEnd = workEnd+50;
     static int otherEnd = sportEnd+50;
     static int shoppingEnd = otherEnd+70;
+    static int meetingEnd = shoppingEnd+50;
 
     // активность
     static String [] time = {"08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -59,9 +60,8 @@ public class ActivityTablesCreation {
         createOther();
         createShoppingLists();
         createShopping();
-
-
-
+        createMeeting();
+        System.out.println(meetingEnd);
         activitiesFile.close();
     }
 
@@ -177,7 +177,7 @@ public class ActivityTablesCreation {
                     "дистанционный" ,
                     impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
                     "не выполнено",
-                    locations[distant],
+                    distant,
                     usersId[i-lessonsEnd]));
 
             workFile.write(String.format( "INSERT INTO \"рабочая_смена\" (\"id_активности\")" +
@@ -268,8 +268,8 @@ public class ActivityTablesCreation {
     public static void createShopping() throws IOException {
         FileWriter shoppingFile = new FileWriter("shopping.sql");
         int activityID = otherEnd;
-        String startTime = time[(int) (Math.random() * (time.length - 4))];
         for (int i = activityID; i < shoppingEnd; i++) {
+            String startTime = time[(int) (Math.random() * (time.length - 4))];
             int shoppingListID = (int) (Math.random() * shoppingLists.length);
             activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
                             "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
@@ -293,9 +293,47 @@ public class ActivityTablesCreation {
         shoppingFile.close();
     }
 
-//    public static void createMeeting() throws IOException {
-//
-//    }
+    public static void createMeeting() throws IOException {
+        FileWriter meetingFile = new FileWriter("meeting.sql");
+        FileWriter meetingsUsers = new FileWriter("meetings-users.sql");
+
+        int activityID = shoppingEnd;
+        for (int i = activityID; i < meetingEnd; i++) {
+            String startTime = time[(int) (Math.random() * (time.length - 4))];
+            int firstUser = usersId[(int) (Math.random() * usersId.length)];
+            activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
+                            "\"допустимое_время_конца\", \"продолжительность\", \"периодичность\"," +
+                            "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
+                            " VALUES (\'%s\', \'%s\',\'%s\', \'%s\',\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+                    startTime,
+                    startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
+                    periodicity[(int) (Math.random() * periodicity.length)],
+                    duration[(int) (Math.random() * duration.length)],
+                    "очный",
+                    impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
+                    "не выполнено",
+                    1+Math.random() * locations.length,
+                    firstUser));
+
+            // встречи
+            meetingFile.write(String.format( "INSERT INTO \"встреча\" (\"id_активности\") " +
+                            " VALUES (\'%s\');\n" , i));
+
+            // встречи-люди
+            for (int j = 0; j < 2; j++) {
+                int secondUser = usersId[(int) (Math.random() * usersId.length)];
+                while (secondUser == firstUser) {
+                    secondUser = usersId[(int) (Math.random() * usersId.length)];
+                }
+                meetingsUsers.write(String.format("INSERT INTO \"встречи_люди\" (\"id_встречи\",\"id_пользователя\") " +
+                                " VALUES (\'%s\', \'%s\');\n",
+                        i - activityID + 1, secondUser));
+            }
+
+        }
+        meetingFile.close();
+        meetingsUsers.close();
+    }
 
 
 //    public static void createActivities() throws IOException {
