@@ -93,7 +93,7 @@ public class Product {
         products.put("Мыло", "50");
         FileWriter nFile = new FileWriter("products.sql");
         for (Map.Entry<String, String> products : products.entrySet()) {
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 3; i++) {
                 nFile.write(String.format("INSERT INTO \"товар\" (\"наименование\",\"стоимость\",\"количество\"" +
                                 ",\"срочность_покупки\",\"подтверждение\",\"id_списка_покупок\") " +
                                 "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n",

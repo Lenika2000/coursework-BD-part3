@@ -7,6 +7,8 @@ import java.util.Map;
 public class ActivityTablesCreation {
     static FileWriter activitiesFile;
     static Location[] locations = new Location[15];
+    static int transportQuantity = 20;
+    static Transport[] transports = new Transport[transportQuantity];
     // разграничение айдишников локаций
     static int itmoStart;
     static int itmoEnd;
@@ -24,6 +26,7 @@ public class ActivityTablesCreation {
     static int otherEnd = sportEnd+50;
     static int shoppingEnd = otherEnd+70;
     static int meetingEnd = shoppingEnd+50;
+    static int transportEnd = meetingEnd + transportQuantity;
 
     // активность
     static String [] time = {"08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -62,7 +65,9 @@ public class ActivityTablesCreation {
         createShoppingLists();
         createShopping();
         createMeeting();
-        System.out.println(meetingEnd);
+        createTransport();
+        createActivityTransport();
+
         activitiesFile.close();
     }
 
@@ -114,8 +119,8 @@ public class ActivityTablesCreation {
                 periodicityTableColumn,
                 "2000-11-28 " + startTime,
                 "2000-11-28 " + endTime,
-                periodicity,
                 interval,
+                periodicity,
                 format ,
                 impactOnStressLevel,
                 "не выполнено",
@@ -152,7 +157,11 @@ public class ActivityTablesCreation {
             String endTime = time[indexStartTime+3];
             String printFormat = format[(int) (Math.random() * format.length)];
             int locationPrint = (printFormat == "дистанционный") ? distant :  (itmoStart + (int) (Math.random() * itmoEnd));
-            String printRoom = (printFormat == "дистанционный") ? "" :  rooms[(int) (Math.random() * rooms.length)];
+            String printRoom = (printFormat == "дистанционный") ? "" :  "\'"+rooms[(int) (Math.random() * rooms.length)] +"\',";
+            String room = "\"аудитория\",";
+            if (printRoom == "") {
+                room = "";
+            }
             writeInActivitiesFile(
                     startTime,
                     endTime,
@@ -163,8 +172,9 @@ public class ActivityTablesCreation {
                     locationPrint,
                     usersId[(int) (Math.random() * usersId.length)]);
 
-            lessonsFile.write(String.format( "INSERT INTO \"учебное_занятие\" (\"аудитория\",\"преподаватель\", \"тип\", \"id_активности\") " +
-                    "VALUES (\'%s\', \'%s\', \'%s\', \'%s\');\n" ,
+            lessonsFile.write(String.format( "INSERT INTO \"учебное_занятие\" (%s\"преподаватель\", \"тип\", \"id_активности\") " +
+                    "VALUES (%s \'%s\', \'%s\', \'%s\');\n" ,
+                    room,
                     printRoom,
                     teachers[(int) (Math.random() * teachers.length)],
                     type[(int) (Math.random() * type.length)],
@@ -326,4 +336,62 @@ public class ActivityTablesCreation {
         meetingFile.close();
         meetingsUsers.close();
     }
+
+
+    public static void createTransport() throws IOException {
+        FileWriter transportFile = new FileWriter("transport.sql");
+        String[] type = {"метро","автобус","трамвай","электричка"};
+        int[] price = {50,55,60};
+        for (int i = 0; i < transportQuantity; i++) {
+            transports[i] = new Transport(
+                    type[(int) (Math.random() * type.length)],
+                    price[(int) (Math.random() * price.length)],
+                    "INTERVAL \'1\' HOUR",
+                    itmoStart + (int)Math.random() * itmoEnd,
+                    distant
+            );
+            transportFile.write(String.format("INSERT INTO \"транспорт\" (\"тип\",\"стоимость_проезда\"," +
+                    "\"время_в_пути\", \"id_локации_а\",\"id_локации_б\") " +
+                    " VALUES (\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');\n",
+                    transports[i].type,
+                    transports[i].price,
+                    transports[i].time,
+                    transports[i].location1ID,
+                    transports[i].location2ID));
+        }
+        transportFile.close();
+
+    }
+
+    public static void createActivityTransport() throws IOException {
+        FileWriter movingFile = new FileWriter("moving.sql");
+        int activityID = meetingEnd;
+        for (int i = activityID; i < transportEnd; i++) {
+            String startTime = time[(int) (Math.random() * (time.length - 4))];
+            int firstUser = usersId[(int) (Math.random() * usersId.length)];
+            writeInActivitiesFile(
+                    startTime,
+                    startAndEndTime.get(startTime)[(int) (Math.random() * startAndEndTime.get(startTime).length)],
+                    periodicity[(int) (Math.random() * periodicity.length)],
+                    transports[i-meetingEnd].time,
+                    "очный",
+                    impactOnStressLevel[(int) (Math.random() * impactOnStressLevel.length)],
+                    transports[i-meetingEnd].location2ID,
+                    firstUser);
+
+//            CREATE TABLE перемещение
+//                    (
+//                            id_перемещения         SERIAL PRIMARY KEY,
+//                            id_транспорта          INTEGER NOT NULL REFERENCES транспорт ON DELETE CASCADE,
+//                            id_активности          INTEGER NOT NULL REFERENCES активность ON DELETE CASCADE
+//                    );
+            movingFile.write(String.format("INSERT INTO \"перемещение\" (\"id_транспорта\",\"id_активности\") " +
+                                " VALUES (\'%s\', \'%s\');\n",
+                    i-meetingEnd + 1, i));
+
+        }
+        movingFile.close();
+    }
+
+
 }

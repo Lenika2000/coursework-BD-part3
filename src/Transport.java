@@ -10,9 +10,18 @@
 
 
 public class Transport {
-    static String[] type = {"метро","автобус","трамвай","электричка"};
-    static int[] price = {50,55,60};
-    static String[] time={};
-    static int[] location1ID={};
-    static int[] location2ID={};
+    public String type;
+    public int price;
+    public String time;
+    public int location1ID;
+    public int location2ID;
+
+    public Transport(String type, int price, String time, int location1ID, int location2ID) {
+        this.type = type;
+        this.price = price;
+        this.time = time;
+        this.location1ID = location1ID;
+        this.location2ID = location2ID;
+    }
+
 }
