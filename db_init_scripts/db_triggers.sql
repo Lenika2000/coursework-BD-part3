@@ -22,4 +22,25 @@ CREATE TRIGGER isMeetingCorrect
     FOR EACH ROW
 EXECUTE PROCEDURE isMeetingCorrect();
 
-DROP TRIGGER isMeetingCorrect ON встречи_люди;
+
+-- если занятие проходит очно, то обязательно должна быть указана аудитория
+CREATE OR REPLACE FUNCTION hasLessonRoom() RETURNS TRIGGER AS
+$$
+DECLARE формат format_enum;
+BEGIN
+        формат = (SELECT активность.формат from активность
+        join учебное_занятие уз on активность.id_активности = NEW.id_активности
+        group by активность.формат);
+
+        IF (NEW.аудитория IS NULL and формат='очный') THEN
+            RAISE EXCEPTION 'Очное занятие можно добавить лишь с указанием аудитории';
+        ELSE
+            RETURN NEW;
+        END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER hasLessonRoom
+    BEFORE INSERT OR UPDATE
+    ON учебное_занятие
+    FOR EACH ROW
+EXECUTE PROCEDURE hasLessonRoom();
