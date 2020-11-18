@@ -95,14 +95,6 @@ CREATE TABLE другое
     id_активности         INTEGER NOT NULL REFERENCES активность ON DELETE CASCADE
 );
 
-CREATE TABLE перемещение
-(
-    id_перемещения         SERIAL PRIMARY KEY,
-    id_транспорта          INTEGER NOT NULL REFERENCES транспорт ON DELETE CASCADE,
-    id_активности          INTEGER NOT NULL REFERENCES активность ON DELETE CASCADE
-);
-
-
 CREATE TABLE товар
 (
     id_товара            SERIAL PRIMARY KEY,
@@ -135,3 +127,9 @@ CREATE TABLE транспорт
     id_локации_б            INTEGER NOT NULL REFERENCES локация ON DELETE CASCADE
 );
 
+CREATE TABLE перемещение
+(
+    id_перемещения         SERIAL PRIMARY KEY,
+    id_транспорта          INTEGER NOT NULL REFERENCES транспорт ON DELETE CASCADE,
+    id_активности          INTEGER NOT NULL REFERENCES активность ON DELETE CASCADE
+);

@@ -32,7 +32,7 @@ public class ActivityTablesCreation {
     static String [] time = {"08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
             "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
             , "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30",
-            "22:00", "22:30", "23:00", "23:30", "00:00", "00:30"};
+            "22:00", "22:30", "23:00", "23:30"};
     static Map<String, String[]> startAndEndTime = new HashMap<>();
     // https://oracle-patches.com/db/sql/3443-%D0%BB%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D0%BB%D1%8B-%D1%82%D0%B8%D0%BF%D0%B0-interval-%D0%B2-pl-sql
     static String[] periodicity = {"","INTERVAL \'1\' DAY","INTERVAL \'2\' DAY","INTERVAL \'3\' DAY",
@@ -115,10 +115,10 @@ public class ActivityTablesCreation {
         activitiesFile.write(String.format("INSERT INTO \"активность\" (\"допустимое_время_начала\"," +
                         "\"допустимое_время_конца\", \"продолжительность\" %s," +
                         "\"формат\", \"влияние_на_уровень_стресса\", \"готовность\", \"id_локации\", \"id_пользователя\")" +
-                        " VALUES (\'%s\', \'%s\' %s, %s,\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
+                        " VALUES (\'%s\', \'%s\', %s %s,\'%s\', \'%s\',\'%s\',\'%s\', \'%s\');\n",
                 periodicityTableColumn,
-                "2000-11-28 " + startTime,
-                "2000-11-28 " + endTime,
+                "2020-11-28 " + startTime,
+                "2020-11-28 " + endTime,
                 interval,
                 periodicity,
                 format ,
