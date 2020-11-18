@@ -352,7 +352,7 @@ public class ActivityTablesCreation {
             );
             transportFile.write(String.format("INSERT INTO \"транспорт\" (\"тип\",\"стоимость_проезда\"," +
                     "\"время_в_пути\", \"id_локации_а\",\"id_локации_б\") " +
-                    " VALUES (\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');\n",
+                    " VALUES (\'%s\',\'%s\',%s,\'%s\',\'%s\');\n",
                     transports[i].type,
                     transports[i].price,
                     transports[i].time,
