@@ -92,16 +92,17 @@ public class Product {
         products.put("Зубная паста", "145");
         products.put("Мыло", "50");
         FileWriter nFile = new FileWriter("products.sql");
+        int i=1;
         for (Map.Entry<String, String> products : products.entrySet()) {
-            for (int i = 0; i < 3; i++) {
+//            for (int i = 0; i < 3; i++) {
                 nFile.write(String.format("INSERT INTO \"товар\" (\"наименование\",\"стоимость\",\"количество\"" +
                                 ",\"срочность_покупки\",\"подтверждение\",\"id_списка_покупок\") " +
                                 "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');\n",
                         products.getKey(), products.getValue(), quantity[(int) (Math.random() * quantity.length)],
                         urgency[(int) (Math.random() * urgency.length)], "не подтвержден",
-                        (1+ (int)(Math.random() * ActivityTablesCreation.shoppingListsQuantity))));
-
-            }
+                        i ));
+                i++;
+//            }
         }
         nFile.close();
     }
