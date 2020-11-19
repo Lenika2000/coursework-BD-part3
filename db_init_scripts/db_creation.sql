@@ -4,6 +4,7 @@ CREATE TABLE пользователь
     имя                  varchar(16) NOT NULL,
     фамилия              varchar(16) NOT NULL,
     макс_допустимый_ус   INTEGER NOT NULL CHECK (макс_допустимый_ус >= 0)
+    текущий_ус           INTEGER NOT NULL CHECK (текущий_ус >= 0)
 );
 
 CREATE TABLE список_покупок
