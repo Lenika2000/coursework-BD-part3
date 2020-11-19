@@ -18,16 +18,16 @@ public class User {
     "Зарина"}; // имя
     static String[] lastNames= {"Маньшина","Корнишова","Гумирова","Андреева","Подсекина","Белова",
     "Петрова", "Иванова"};   // фамилия
-    static int[] maxStressLevel = {100,200,300,400,500,600,700};
+    static int[] maxStressLevel = {300,400,500,600,700};
     static int usersQuantity = firstNames.length * lastNames.length;
 
     public static void createUsers() throws IOException {
         FileWriter nFile = new FileWriter("users.sql");
         for (String firstName : firstNames) {
             for (String lastName : lastNames) {
-                int maxStressLevelIndex = (int) ( Math.random() * 7);
-                nFile.write(String.format( "INSERT INTO \"пользователь\" (\"имя\",\"фамилия\",\"макс_допустимый_ус\") " +
-                        "VALUES (\'%s\', \'%s\', \'%s\');\n" , firstName, lastName, maxStressLevel[maxStressLevelIndex]));
+                int maxStressLevelIndex = (int) ( Math.random() * maxStressLevel.length);
+                nFile.write(String.format( "INSERT INTO \"пользователь\" (\"имя\",\"фамилия\",\"макс_допустимый_ус\",\"текущий_ус\") " +
+                        "VALUES (\'%s\', \'%s\', \'%s\', \'%s\');\n" , firstName, lastName, maxStressLevel[maxStressLevelIndex], 100));
             }
         }
         nFile.close();
